@@ -30,7 +30,7 @@ std::function<TResult2(TArg)> Seq(std::function<TResult(TArg)> InFunction1, std:
 		[InFunction1, InFunction2](TArg InArg) { return (InFunction2(InFunction1(InArg))); }};
 }
 
-/// 
+///
 
 template <typename TArg, typename TResult, typename TResult2>
 std::function<TResult2(TArg)> Seq(TResult (*InFunction1)(TArg), TResult2 (*InFunction2)(const TResult&))
@@ -54,17 +54,17 @@ std::function<TResult2(TArg)> Seq(std::function<TResult(TArg)> InFunction1, TRes
 }
 
 template <typename TArg, typename TResult, typename TResult2>
-std::function<TResult2(TArg)> Seq(std::function<TResult(TArg)> InFunction1, std::function<TResult2(const TResult&)> InFunction2)
+std::function<TResult2(TArg)> Seq(std::function<TResult(TArg)> InFunction1,
+								  std::function<TResult2(const TResult&)> InFunction2)
 {
 	return std::function<TResult2(TArg)>{
 		[InFunction1, InFunction2](TArg InArg) { return (InFunction2(InFunction1(InArg))); }};
 }
 
-
-/// 
+///
 
 template <typename TArg, typename TResult, typename C>
-auto Seq(TResult(*InFunction)(TArg), C InObject) -> std::function<decltype(InObject(TResult{}))(TResult)>
+auto Seq(TResult (*InFunction)(TArg), C InObject) -> std::function<decltype(InObject(TResult{}))(TResult)>
 {
 	auto Fun = [InFunction, InObject](TArg InArg) {
 		TResult IntermediateResult{InFunction(InArg)};
@@ -86,7 +86,7 @@ auto Seq(std::function<TResult(TArg)> InFunction, C InObject) -> std::function<d
 }
 
 template <typename TArg, typename TResult, typename C>
-auto Seq(C InObject, TResult(*InFunction)(TArg)) /* -> std::function<decltype(TResult(TArg{}))> */
+auto Seq(C InObject, TResult (*InFunction)(TArg)) /* -> std::function<decltype(TResult(TArg{}))> */
 {
 	auto Fun = [InFunction, InObject](auto InArg) {
 		auto IntermediateResult{std::invoke(InObject, InArg)};

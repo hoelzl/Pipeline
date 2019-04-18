@@ -5,6 +5,8 @@
 #include "FunctionalPipeline.h"
 #include "Pipeline.h"
 
+// Some functions that we want to put into the pipelines
+
 int AddOne(int InArg)
 {
 	std::cerr << "  ... in AddOne()" << std::endl;
@@ -17,6 +19,7 @@ std::string ToString(int InNumber)
 	return std::to_string(InNumber);
 }
 
+// Non-overloaded version of ToString
 std::string IntToString(int InNumber)
 {
 	std::cerr << "  ... in IntToString()" << std::endl;
@@ -40,6 +43,7 @@ struct AnnotatedString
 	std::string Annotation;
 };
 
+// Funcallable class
 struct Annotator
 {
 	Annotator(std::string InAnnotation) : Annotation{InAnnotation}
@@ -71,18 +75,19 @@ std::string AnnotationToString(const AnnotatedString& InString)
 int main()
 {
 	Annotator A{"(emphasized)"};
+	std::function<AnnotatedString(std::string)> Fun{[A](auto X) { return A(X); }};
+
 	Pipeline<int, std::string> ClassPipeline{Source(AddOne) | ToString | Emphasize | A | ToString};
 	std::cout << ClassPipeline(1) << std::endl;
 
-	std::function<AnnotatedString(std::string)> Fun{[A](auto X) { return A(X); }};
 	Pipeline<int, std::string> ClassPipeline2{Source(AddOne) | ToString | Emphasize | Fun | ToString};
 	std::cout << (ClassPipeline2 | Emphasize)(2) << std::endl;
 
-	auto FunPipeline{
-		Seq(AddOne, IntToString, Emphasize, Emphasize, Length, IntToString, Emphasize, A, AnnotationToString)};
+	auto FunPipeline{Seq(AddOne, IntToString, Emphasize, Emphasize, Length, IntToString, Emphasize, A, AnnotationToString)};
 	std::cout << FunPipeline(4) << std::endl;
-	
-	auto FunPipeline2{Seq(AddOne, IntToString, Emphasize, Emphasize, Length, IntToString, Emphasize, Fun, AnnotationToString)};
+
+	auto FunPipeline2{
+		Seq(AddOne, IntToString, Emphasize, Emphasize, Length, IntToString, Emphasize, Fun, AnnotationToString)};
 	std::cout << Seq(FunPipeline2, Emphasize)(4) << std::endl;
 	return 0;
 }
