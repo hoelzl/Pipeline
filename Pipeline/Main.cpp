@@ -43,7 +43,7 @@ struct AnnotatedString
 	std::string Annotation;
 };
 
-// Funcallable class
+// A funcallable class
 struct Annotator
 {
 	Annotator(std::string InAnnotation) : Annotation{InAnnotation}
@@ -77,10 +77,10 @@ int main()
 	Annotator A{"(emphasized)"};
 	std::function<AnnotatedString(std::string)> Fun{[A](auto X) { return A(X); }};
 
-	Pipeline<int, std::string> ClassPipeline{Source(AddOne) | ToString | Emphasize | A | ToString};
+	auto ClassPipeline{Source(AddOne) | ToString | Emphasize | A | ToString};
 	std::cout << ClassPipeline(1) << std::endl;
 
-	Pipeline<int, std::string> ClassPipeline2{Source(AddOne) | ToString | Emphasize | Fun | ToString};
+	auto ClassPipeline2{Source(AddOne) | ToString | Emphasize | Fun | ToString};
 	std::cout << (ClassPipeline2 | Emphasize)(2) << std::endl;
 
 	auto FunPipeline{Seq(AddOne, IntToString, Emphasize, Emphasize, Length, IntToString, Emphasize, A, AnnotationToString)};
