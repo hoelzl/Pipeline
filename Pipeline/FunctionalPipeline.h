@@ -66,44 +66,28 @@ std::function<TResult2(TArg)> Seq(std::function<TResult(TArg)> InFunction1,
 template <typename TArg, typename TResult, typename C>
 auto Seq(TResult (*InFunction)(TArg), C InObject) -> std::function<decltype(InObject(TResult{}))(TResult)>
 {
-	auto Fun = [InFunction, InObject](TArg InArg) {
-		TResult IntermediateResult{InFunction(InArg)};
-		decltype(InObject(TResult{})) InnerResult = std::invoke(InObject, IntermediateResult);
-		return InnerResult;
-	};
+	auto Fun = [InFunction, InObject](TArg InArg) { return std::invoke(InObject, InFunction(InArg)); };
 	return Fun;
 }
 
 template <typename TArg, typename TResult, typename C>
 auto Seq(std::function<TResult(TArg)> InFunction, C InObject) -> std::function<decltype(InObject(TResult{}))(TResult)>
 {
-	auto Fun = [InFunction, InObject](TArg InArg) {
-		TResult IntermediateResult{InFunction(InArg)};
-		decltype(InObject(TResult{})) InnerResult = std::invoke(InObject, IntermediateResult);
-		return InnerResult;
-	};
+	auto Fun = [InFunction, InObject](TArg InArg) { return std::invoke(InObject, InFunction(InArg)); };
 	return Fun;
 }
 
 template <typename TArg, typename TResult, typename C>
 auto Seq(C InObject, TResult (*InFunction)(TArg)) /* -> std::function<decltype(TResult(TArg{}))> */
 {
-	auto Fun = [InFunction, InObject](auto InArg) {
-		auto IntermediateResult{std::invoke(InObject, InArg)};
-		TResult InnerResult = InFunction(IntermediateResult);
-		return InnerResult;
-	};
+	auto Fun = [InFunction, InObject](auto InArg) { return InFunction(std::invoke(InObject, InArg)); };
 	return Fun;
 }
 
 template <typename TArg, typename TResult, typename C>
 auto Seq(C InObject, std::function<TResult(TArg)> InFunction) /* -> std::function<decltype(TResult(TArg{}))> */
 {
-	auto Fun = [InFunction, InObject](auto InArg) {
-		auto IntermediateResult{std::invoke(InObject, InArg)};
-		TResult InnerResult = std::invoke(InFunction, IntermediateResult);
-		return InnerResult;
-	};
+	auto Fun = [InFunction, InObject](auto InArg) { return InFunction(std::invoke(InObject, InArg)); };
 	return Fun;
 }
 
